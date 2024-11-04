@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: "incident-svc"
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/incident_service_maxi_clone
+    username: erikssonherlo
+    password: 201830459
+
+  web:
+    cors:
+      enabled: true
+      allowed-origins: "http://localhost:5173/"
+      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+
+  rabbitmq:
+    host: 34.73.156.126
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: "/"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://34.138.194.76:8761/eureka/
+  instance:
+    prefer-ip-address: false
+    hostname: users-svc
+    instance-id: ${spring.application.name}:${server.port}
+
+server:
+  port: 8081
