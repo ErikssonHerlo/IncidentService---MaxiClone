@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         service:
-          - users
+          - incidents
 
     steps:
       - uses: actions/checkout@v3
@@ -38,11 +38,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/maxi-clone/mc-repository-dev/users:${{ github.sha }} .
+          docker build -t us-east1-docker.pkg.dev/maxi-clone/mc-repository-dev/incidents:${{ github.sha }} .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-east1-docker.pkg.dev/maxi-clone/mc-repository-dev/users:${{ github.sha }}
+          docker push us-east1-docker.pkg.dev/maxi-clone/mc-repository-dev/incidents:${{ github.sha }}
 
       - name: Install gke-gcloud-auth-plugin
         run: |

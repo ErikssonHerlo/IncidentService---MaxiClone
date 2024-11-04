@@ -1,20 +1,14 @@
 spring:
   application:
-    name: "incident-svc"
+    name: "incidents-svc"
 
   datasource:
-    url: jdbc:mysql://localhost:3306/incident_service_maxi_clone
-    username: erikssonherlo
-    password: 201830459
-
-  web:
-    cors:
-      enabled: true
-      allowed-origins: "http://localhost:5173/"
-      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    url: jdbc:mysql://mysql-service.default.svc.cluster.local:3306/orders
+    username: cluster
+    password: cluster
 
   rabbitmq:
-    host: 34.73.156.126
+    host: rabbitmq-service.default.svc.cluster.local
     port: 5672
     username: guest
     password: guest
@@ -23,11 +17,11 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://34.138.194.76:8761/eureka/
+      defaultZone: http://eureka-server-svc.default.svc.cluster.local:8761/eureka/
   instance:
     prefer-ip-address: false
-    hostname: users-svc
+    hostname: incidents-svc
     instance-id: ${spring.application.name}:${server.port}
 
 server:
-  port: 8081
+  port: 8086
