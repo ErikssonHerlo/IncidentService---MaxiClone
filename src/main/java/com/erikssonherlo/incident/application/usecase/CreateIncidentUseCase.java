@@ -1,6 +1,5 @@
 package com.erikssonherlo.incident.application.usecase;
 
-import com.erikssonherlo.common.application.exception.ResourceAlreadyExistsException;
 import com.erikssonherlo.common.application.security.JWTService;
 import com.erikssonherlo.incident.application.dto.CreateIncidentDTO;
 import com.erikssonherlo.incident.application.dto.NotificationDto;
@@ -61,14 +60,14 @@ public class CreateIncidentUseCase implements CreateIncidentInputPort {
                         .solution(createIncidentDTO.solution())
                         .details(details)
                         .build();
-
+            Incident incidentCreated = incidentJpaRepositoryPort.saveIncident(incident);
             notificationDto.setTo(createIncidentDTO.userEmail());
             notificationDto.setSubject("NEW INCIDENT CREATED");
             notificationDto.setTemplate(TemplateType.INCIDENT_CREATED);
-            notificationDto.setMessage(Long.toString(incident.getIncidentId()));
+            notificationDto.setMessage(Long.toString(incidentCreated.getIncidentId()));
             rabbitTemplate.convertAndSend(queueName, notificationDto);
             System.out.println("Email enviado a la cola: " + notificationDto);
-            return incidentJpaRepositoryPort.saveIncident(incident);
+            return incidentCreated;
         }catch (Exception e){
             throw e;
         }
