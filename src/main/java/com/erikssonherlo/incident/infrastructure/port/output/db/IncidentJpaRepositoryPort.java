@@ -19,6 +19,8 @@ public interface IncidentJpaRepositoryPort {
 
     Page<Incident> findAllIncidents(Pageable pageable);
 
+    List<Incident> reportAllIncidents(List<Long> storeIds, String status, String startDate, String endDate);
+
     Page<Incident> findAllIncidentsByStatus(IncidentStatus status, Pageable pageable);
 
     Page<Incident> findAllIncidentsByStoreId(Pageable pageable, List<Long> storeIds);

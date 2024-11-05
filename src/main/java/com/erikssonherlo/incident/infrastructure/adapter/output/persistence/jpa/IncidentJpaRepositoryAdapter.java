@@ -45,6 +45,13 @@ public class IncidentJpaRepositoryAdapter implements IncidentJpaRepositoryPort {
     }
 
     @Override
+    public List<Incident> reportAllIncidents(List<Long> storeIds, String status, String startDate, String endDate) {
+        return incidentJpaRepository.findAllByStoreIdInAndStatusAndCreatedAtBetween(storeIds,status,startDate,endDate).stream()
+                .map(this::mapToDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<Incident> findAllIncidentsByStatus(IncidentStatus status, Pageable pageable) {
         return incidentJpaRepository.findByStatus(status, pageable).map(this::mapToDomain);
     }

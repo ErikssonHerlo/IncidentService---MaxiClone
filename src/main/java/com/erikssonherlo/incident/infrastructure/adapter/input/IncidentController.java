@@ -29,6 +29,7 @@ public class IncidentController {
     private final UpdateIncidentInputPort updateIncidentInputPort;
     private final GetAllIncidentsInputPort getAllIncidentsInputPort;
     private final GetAllIncidentsByStatusInputPort getAllIncidentsByStatusInputPort;
+    private final ReportAllIncidentsInputPort reportAllIncidentsInputPort;
 
     @GetMapping()
     public PaginatedResponse<List<Incident>> getAllIncidents(
@@ -66,5 +67,13 @@ public class IncidentController {
     @DeleteMapping("/{id}")
     public ApiResponse<?> deleteIncident(@PathVariable Long id){
         return new ApiResponse<>(HttpStatus.NO_CONTENT.value(),"SUCCESS",HttpStatus.NO_CONTENT,deleteIncidentInputPort.deleteIncident(id));
+    }
+
+    @GetMapping("/report/getAllIncidents")
+    public ApiResponse<List<Incident>> reportAllIncidents(@RequestParam(value = "storeId", required = false) List<Long> storeIds,
+                                                   @RequestParam(value = "status", required = false) String status,
+                                                   @RequestParam(value = "startDate", required = false) String startDate,
+                                                   @RequestParam(value = "endDate", required = false) String endDate){
+        return new ApiResponse<>(HttpStatus.OK.value(),"SUCCESS",HttpStatus.OK, reportAllIncidentsInputPort.reportAllIncidents(storeIds,status,startDate,endDate));
     }
 }
