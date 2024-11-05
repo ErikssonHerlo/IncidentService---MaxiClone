@@ -9,6 +9,7 @@ import com.erikssonherlo.incident.domain.model.enums.TemplateType;
 import com.erikssonherlo.incident.infrastructure.port.input.CreateIncidentInputPort;
 import com.erikssonherlo.incident.infrastructure.port.output.db.IncidentJpaRepositoryPort;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class CreateIncidentUseCase implements CreateIncidentInputPort {
     private final String queueName = "notifications";
 
     @Override
+    @Transactional
     public Incident createIncident(CreateIncidentDTO createIncidentDTO) {
         try {
             String token = jwtService.extractToken(request);

@@ -11,6 +11,7 @@ import com.erikssonherlo.incident.domain.model.enums.TemplateType;
 import com.erikssonherlo.incident.infrastructure.port.input.UpdateIncidentInputPort;
 import com.erikssonherlo.incident.infrastructure.port.output.db.IncidentJpaRepositoryPort;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class UpdateIncidentUseCase implements UpdateIncidentInputPort {
     private final String queueName = "notifications";
 
     @Override
+    @Transactional
     public Incident updateIncident(Long id, UpdateIncidentDTO updateIncidentDTO) {
         try {
             String token = jwtService.extractToken(request);
