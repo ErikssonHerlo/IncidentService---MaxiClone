@@ -30,8 +30,6 @@ public class UpdateIncidentUseCase implements UpdateIncidentInputPort {
             if(incident.isEmpty()) throw new ResourceNotFoundException("incident","id",id);
             incident.get().setStatus(updateIncidentDTO.status());
             incident.get().setSolution(updateIncidentDTO.solution());
-
-
             return incidentRepositoryPort.updateIncident(id, incident.get());
 
         }catch (Exception e){

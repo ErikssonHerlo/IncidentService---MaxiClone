@@ -31,8 +31,13 @@ public class IncidentController {
     private final GetAllIncidentsByStatusInputPort getAllIncidentsByStatusInputPort;
 
     @GetMapping()
-    public PaginatedResponse<List<Incident>> getAllIncidents(@PageableDefault(page = 0,size = 10) Pageable pageable){
-        Page<Incident> incidentsPage = getAllIncidentsInputPort.getAllIncidents(pageable);
+    public PaginatedResponse<List<Incident>> getAllIncidents(
+            @PageableDefault(page = 0,size = 10) Pageable pageable,
+            @RequestParam(value = "storeId", required = false) List<Long> storeIds,
+            @RequestParam(value = "status", required = false) String status
+
+    ){
+        Page<Incident> incidentsPage = getAllIncidentsInputPort.getAllIncidents(pageable, storeIds, status);
         return new PaginatedResponse<>(HttpStatus.OK.value(),"SUCCESS", HttpStatus.OK,incidentsPage.getContent(),incidentsPage.getPageable(),incidentsPage.isLast(),incidentsPage.isFirst(),incidentsPage.hasNext(),incidentsPage.hasPrevious(),incidentsPage.getTotalPages(),(int) incidentsPage.getTotalElements());
     }
 

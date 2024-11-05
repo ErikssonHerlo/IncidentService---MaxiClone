@@ -6,6 +6,7 @@ import com.erikssonherlo.incident.infrastructure.adapter.output.persistence.enti
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IncidentJpaRepositoryPort {
@@ -19,6 +20,10 @@ public interface IncidentJpaRepositoryPort {
     Page<Incident> findAllIncidents(Pageable pageable);
 
     Page<Incident> findAllIncidentsByStatus(IncidentStatus status, Pageable pageable);
+
+    Page<Incident> findAllIncidentsByStoreId(Pageable pageable, List<Long> storeIds);
+
+    Page<Incident> findAllIncidentsByStoreIdAndStatus(Pageable pageable, List<Long> storeIds, IncidentStatus status);
 
     Incident saveIncident(Incident incident);
 

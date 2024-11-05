@@ -9,9 +9,11 @@ import com.erikssonherlo.incident.infrastructure.adapter.output.persistence.repo
 import com.erikssonherlo.incident.infrastructure.port.output.db.IncidentJpaRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,8 +50,20 @@ public class IncidentJpaRepositoryAdapter implements IncidentJpaRepositoryPort {
     }
 
     @Override
+    public Page<Incident> findAllIncidentsByStoreIdAndStatus(Pageable pageable, List<Long> storeIds, IncidentStatus status) {
+        return incidentJpaRepository.findAllByStoreIdInAndStatus(storeIds, status, pageable)
+                .map(this::mapToDomain);
+    }
+
+    // Method to get incidents by store IDs (without status filtering)
+    @Override
+    public Page<Incident> findAllIncidentsByStoreId(Pageable pageable, List<Long> storeIds) {
+        return incidentJpaRepository.findByStoreIdIn(storeIds, pageable)
+                .map(this::mapToDomain);
+    }
+    @Override
     public Incident saveIncident(Incident incident) {
-        IncidentEntity incidentEntity = mapToEntity(incident);
+        IncidentEntity incidentEntity = mapToEntity(incident, false);
         IncidentEntity savedEntity = incidentJpaRepository.save(incidentEntity);
         return mapToDomain(savedEntity);
     }
@@ -57,10 +71,11 @@ public class IncidentJpaRepositoryAdapter implements IncidentJpaRepositoryPort {
     @Override
     public Incident updateIncident(Long id, Incident incident) {
         if (existsIncident(id)) {
-            IncidentEntity incidentEntity = mapToEntity(incident);
+            IncidentEntity incidentEntity = mapToEntity(incident, true);
             incidentEntity.setIncidentId(id.intValue());  // Ensure the ID remains consistent
-            incidentJpaRepository.save(incidentEntity);
-            return mapToDomain(incidentEntity);
+
+            IncidentEntity updatedEntity = incidentJpaRepository.save(incidentEntity);
+            return mapToDomain(updatedEntity);
         } else {
             throw new IllegalArgumentException("Incident with id " + id + " does not exist.");
         }
@@ -101,7 +116,7 @@ public class IncidentJpaRepositoryAdapter implements IncidentJpaRepositoryPort {
                 .build();
     }
 
-    private IncidentEntity mapToEntity(Incident incident) {
+    private IncidentEntity mapToEntity(Incident incident, boolean isUpdate) {
         IncidentEntity entity = IncidentEntity.builder()
                 .shipmentId(incident.getShipmentId())
                 .storeId(incident.getStoreId())
@@ -113,7 +128,8 @@ public class IncidentJpaRepositoryAdapter implements IncidentJpaRepositoryPort {
                 .deletedAt(incident.getDeletedAt())
                 .build();
 
-        List<IncidentDetailEntity> detailEntities = incident.getDetails().stream()
+        if (!isUpdate && incident.getDetails() != null) {
+            List<IncidentDetailEntity> detailEntities = incident.getDetails().stream()
                 .map(detail -> IncidentDetailEntity.builder()
                         .incident(entity)
                         .productSku(detail.getProductSku())
@@ -124,8 +140,10 @@ public class IncidentJpaRepositoryAdapter implements IncidentJpaRepositoryPort {
                         .deletedAt(detail.getDeletedAt())
                         .build())
                 .collect(Collectors.toList());
-
-        entity.setIncidentDetails(detailEntities);
+            entity.setIncidentDetails(detailEntities);
+        } else {
+            entity.setIncidentDetails(new ArrayList<>());
+        }
         return entity;
     }
 
